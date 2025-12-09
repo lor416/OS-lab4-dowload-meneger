@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Browser/Browser.vcxproj">
+    <BuildDependency Project="Downloader/Downloader.vcxproj" />
+  </Project>
+  <Project Path="Downloader/Downloader.vcxproj" />
+</Solution>
