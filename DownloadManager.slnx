@@ -3,8 +3,8 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Browser/Browser.vcxproj">
+  <Project Path="Browser/Browser.vcxproj" Id="6b299626-9334-43f5-9868-5aefbd9d1203">
     <BuildDependency Project="Downloader/Downloader.vcxproj" />
   </Project>
-  <Project Path="Downloader/Downloader.vcxproj" />
+  <Project Path="Downloader/Downloader.vcxproj" Id="49ebe3da-b909-444a-b31a-06b0769cf902" />
 </Solution>

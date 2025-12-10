@@ -32,13 +32,15 @@ double calculateStandardDeviation(const std::vector<double>& arr) {
 }
 
 
-void processFileTask(int fileNumber) {
+void processFileTask(int fileNumber, HANDLE hMutex) {
     std::vector<double> data = generateRandomArray(200);
     double mean = calculateMean(data);
     double stdDev = calculateStandardDeviation(data);
     double minValue = *std::min_element(data.begin(), data.end());
     double maxValue = *std::max_element(data.begin(), data.end());
+    WaitForSingleObject(hMutex, INFINITE);
     std::cout << "    - Standard Deviation: " << stdDev << "\n";
+    ReleaseMutex(hMutex);
 
 }
 
@@ -50,8 +52,6 @@ int main(int argc, char* argv[]) {
     }
     std::string fileName = "file_" + std::to_string(fileNumber) + ".dat";
     DWORD pid = GetCurrentProcessId();
-
-
     HANDLE hSemaphore = OpenSemaphore(
         SEMAPHORE_ALL_ACCESS,
         FALSE,
@@ -72,8 +72,9 @@ int main(int argc, char* argv[]) {
         std::cout << "Last error: " << GetLastError() << std::endl;
         return 1;
     }
-
+    WaitForSingleObject(hMutex, INFINITE);
     std::cout << "[PID: " << pid << "] Waiting for download slot...\n";
+    ReleaseMutex(hMutex);
 
     HANDLE waitHandles[2];
     waitHandles[0] = hSemaphore;
@@ -84,7 +85,6 @@ int main(int argc, char* argv[]) {
         FALSE,
         INFINITE
     );
-
     if (waitResult == WAIT_OBJECT_0 + 1) {
         WaitForSingleObject(hMutex, INFINITE);
         std::cout << "[PID: " << pid << "] Download cancelled (browser is closing).\n";
@@ -107,9 +107,10 @@ int main(int argc, char* argv[]) {
     std::cout << "[PID: " << pid << "] Connection established. ";
     std::cout << "Starting download of '" << fileName << "'...\n";
     ReleaseMutex(hMutex);
-    processFileTask(fileNumber);
+    processFileTask(fileNumber, hMutex); 
 
-    int sleepTime = (rand() % 2000) + 1000;  // 1000-3000 мс
+
+    int sleepTime = (rand() % 2000) + 1000;  
     Sleep(sleepTime);
 
 
